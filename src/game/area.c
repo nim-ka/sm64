@@ -68,6 +68,8 @@ Vp D_8032CF00 = { {
     { 640, 480, 511, 0 },
 } };
 
+u8 gRenderHud = TRUE;
+
 #ifdef VERSION_EU
 const char *gNoControllerMsg[] = {
     "NO CONTROLLER",
@@ -356,7 +358,9 @@ void render_game(void) {
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
                       SCREEN_HEIGHT - BORDER_HEIGHT);
-        render_hud();
+
+        if (gRenderHud)
+            render_hud();
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         render_text_labels();

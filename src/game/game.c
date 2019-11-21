@@ -15,6 +15,7 @@
 #include "segment2.h"
 #include "main_entry.h"
 #include <prevent_bss_reordering.h>
+#include "ramview.h"
 #include "game.h"
 
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
@@ -333,5 +334,7 @@ void thread5_game_loop(UNUSED void *arg) {
             // amount of free space remaining.
             print_text_fmt_int(180, 20, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
         }
+
+        ramview();
     }
 }
