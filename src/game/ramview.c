@@ -4,6 +4,7 @@
 #include "game.h"
 #include "area.h"
 #include "ingame_menu.h"
+#include "print.h"
 #include "ramview.h"
 
 u32 sCurrRamviewPtr = 0x80000000;
@@ -30,16 +31,21 @@ void ramview(void) {
     if (sDisplayRamview) {
         char addrbuf[10];
         s32 i;
+        u32 newRamview = sCurrRamviewPtr;
         u32 newCursor;
 
         u8 r = gPlayer1Controller->buttonDown & R_TRIG;
 
         u32 diff = sCurrCursorPtr - sCurrRamviewPtr;
 
-        if (gPlayer1Controller->buttonPressed & U_JPAD) sCurrRamviewPtr += 0x100 * (r ? 0x100 : 0x001);
-        if (gPlayer1Controller->buttonPressed & R_JPAD) sCurrRamviewPtr += 0x10  * (r ? 0x100 : 0x001);
-        if (gPlayer1Controller->buttonPressed & D_JPAD) sCurrRamviewPtr -= 0x100 * (r ? 0x100 : 0x001);
-        if (gPlayer1Controller->buttonPressed & L_JPAD) sCurrRamviewPtr -= 0x10  * (r ? 0x100 : 0x001);
+        if (gPlayer1Controller->buttonPressed & U_JPAD) newRamview += 0x100 * (r ? 0x100 : 0x001);
+        if (gPlayer1Controller->buttonPressed & R_JPAD) newRamview += 0x10  * (r ? 0x100 : 0x001);
+        if (gPlayer1Controller->buttonPressed & D_JPAD) newRamview -= 0x100 * (r ? 0x100 : 0x001);
+        if (gPlayer1Controller->buttonPressed & L_JPAD) newRamview -= 0x10  * (r ? 0x100 : 0x001);
+
+        if (newRamview >= 0x80000000) {
+            sCurrRamviewPtr = newRamview;
+        }
 
         sCurrCursorPtr = sCurrRamviewPtr + diff;
         newCursor = sCurrCursorPtr;
@@ -53,8 +59,8 @@ void ramview(void) {
             sCurrCursorPtr = newCursor;
         }
 
-        if (gPlayer1Controller->buttonPressed & A_BUTTON) (* (u8 *) sCurrCursorPtr) ++;
-        if (gPlayer1Controller->buttonPressed & B_BUTTON) (* (u8 *) sCurrCursorPtr) --;
+        if (gPlayer1Controller->buttonPressed & A_BUTTON) (* (u8 *) sCurrCursorPtr) += (r ? 0x10 : 0x01);
+        if (gPlayer1Controller->buttonPressed & B_BUTTON) (* (u8 *) sCurrCursorPtr) -= (r ? 0x10 : 0x01);
 
         sprintf(addrbuf, "%08x", sCurrRamviewPtr);
         print_text(50, 210, addrbuf);
